@@ -1,5 +1,5 @@
-![lang ru](https://img.shields.io/badge/lang-ru-blue)
-![lang en](https://img.shields.io/badge/lang-en-red)
+[![lang ru](https://img.shields.io/badge/lang-ru-blue)](https://github.com/EmilioAugust/Collector/blob/main/README.ru.md)
+[![lang en](https://img.shields.io/badge/lang-en-red)](https://github.com/EmilioAugust/Collector/blob/main/README.md)
 
 # Collector
 **Collector** is a full-stack application for managing your personal collection of movies, TV series, and books.  
