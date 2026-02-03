@@ -46,7 +46,7 @@ collector/
 ```
 ---
 
-## 🐳 Docker Usage (recommended)
+## Docker Usage (recommended)
 
 **1. Build the image**
 ```bash
@@ -59,13 +59,13 @@ http://localhost:3000/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 PRs are welcome!
 Feel free to add new sources or improve code structure.
 
 ---
 
-## 📄 License
+## License
 
 MIT — free for all use.
