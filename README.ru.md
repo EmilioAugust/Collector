@@ -1,5 +1,5 @@
-![lang en](https://img.shields.io/badge/lang-en-red)(https://github.com/EmilioAugust/Collector/blob/main/README.md)
-![lang ru](https://img.shields.io/badge/lang-ru-blue)(https://github.com/EmilioAugust/Collector/blob/main/README.ru.md)
+[![lang en](https://img.shields.io/badge/lang-en-red)](https://github.com/EmilioAugust/Collector/blob/main/README.md)
+[![lang ru](https://img.shields.io/badge/lang-ru-blue)](https://github.com/EmilioAugust/Collector/blob/main/README.ru.md)
 
 # Collector
 **Collector** Это полнофункциональное приложение для управления вашей личной коллекцией фильмов, сериалов и книг.
