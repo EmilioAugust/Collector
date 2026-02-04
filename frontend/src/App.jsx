@@ -4,7 +4,6 @@ import { ThemeProvider, useTheme } from './context/ThemeContext';
 import Auth from './components/Auth';
 import Sidebar from './components/Sidebar';
 import Content from './components/Content';
-// import './styles/App.css';
 
 function App() {
     const { isAuthenticated, loading: authLoading } = useAuth();
