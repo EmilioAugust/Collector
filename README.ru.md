@@ -20,10 +20,11 @@
 - FastAPI
 - JWT Authentication
 - REST API
+- Pytest
 
 ---
 
-## Features
+## Функции
 - Регистрация и вход пользователя
 - Аутентификация на основе JWT
 - Поиск по названию
