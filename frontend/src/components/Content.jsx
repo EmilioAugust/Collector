@@ -370,7 +370,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
                         ) : (
                             displayItems.map((item, index) => (
                                 isSearching ? (
-                                    // Карточка для результатов поиска
                                     <div key={`search-${index}`} className="card">
                                         <div className="card-image-container">
                                             {item.poster || item.cover ? (
