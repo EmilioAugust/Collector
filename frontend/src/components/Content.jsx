@@ -27,7 +27,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [sortOrder, setSortOrder] = useState('newest');
     
-    // Функция для сортировки коллекции (новые первыми)
     const sortCollection = (items, order = 'newest') => {
         if (!Array.isArray(items)) return [];
 
@@ -48,12 +47,10 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
         });
     };
     
-    // Отсортированная коллекция
     const sortedCollection = useMemo(() => {
         return sortCollection(collection, sortOrder);
     }, [collection, sortOrder]);
     
-    // Загрузка коллекции
     const loadCollection = useCallback(async () => {
         setLoading(true);
         setError('');
@@ -76,7 +73,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
                     data = [];
             }
             
-            // Сортируем полученные данные
             const sortedData = sortCollection(Array.isArray(data) ? data : []);
             setCollection(sortedData);
             setSearchResults([]);
@@ -89,7 +85,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
         }
     }, [currentTab, currentStatus]);
     
-    // Поиск
     const handleSearch = async (page = 1) => {
         if (!searchQuery.trim()) {
             loadCollection();
@@ -114,7 +109,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
                         const seriesData = await seriesAPI.searchSeries(searchQuery, 20);
                         console.log('Series search data received:', seriesData);
                         
-                        // Обрабатываем данные для унификации
                         let processedData = [];
                         if (Array.isArray(seriesData)) {
                             processedData = seriesData.map(series => {
@@ -149,7 +143,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
                     data = [];
             }
             
-            // Для поиска тоже можно отсортировать, если нужно
             const sortedSearchResults = sortCollection(Array.isArray(data) ? data : []);
             setSearchResults(sortedSearchResults);
             setSearchPage(page);
@@ -162,7 +155,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
         }
     };
     
-    // Обновление статуса
     const handleStatusChange = async (id, newStatus) => {
         try {
             switch (currentTab) {
@@ -177,7 +169,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
                     break;
             }
             
-            // Обновляем локальное состояние с сохранением сортировки
             const updateArray = (arr) => 
                 arr.map(item => 
                     (item.id === id || item._id === id) 
@@ -195,7 +186,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
         }
     };
     
-    // Удаление элемента
     const handleDelete = async (id) => {
         try {
             switch (currentTab) {
@@ -210,7 +200,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
                     break;
             }
             
-            // Удаляем из локального состояния
             const filterArray = (arr) => 
                 arr.filter(item => item.id !== id && item._id !== id);
             
@@ -224,7 +213,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
         }
     };
     
-    // Добавление элемента из поиска
     const handleAddItem = async (item) => {
         try {
             let data = {};
@@ -259,7 +247,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
             }
             
             showNotification('Item added successfully!');
-            // Перезагружаем коллекцию - новый элемент появится первым
             loadCollection();
         } catch (err) {
             console.error('Add item error:', err);
@@ -267,13 +254,11 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
         }
     };
     
-    // Показ деталей элемента
     const handleShowDetails = (item) => {
         setSelectedItem(item);
         setIsModalOpen(true);
     };
     
-    // Уведомления
     const showNotification = (message, type = 'success') => {
         console.log(`${type}: ${message}`);
         if (type === 'error') {
@@ -281,19 +266,16 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
         }
     };
     
-    // Обработчик ввода в поиске
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             handleSearch();
         }
     };
     
-    // Загрузка коллекции при изменении вкладки или статуса
     useEffect(() => {
         loadCollection();
     }, [loadCollection]);
     
-    // Текущие отображаемые элементы
     const displayItems = isSearching ? searchResults : sortedCollection;
     const isSearchActive = isSearching && searchQuery.trim();
     const tabLabels = {
@@ -456,7 +438,6 @@ const Content = ({ currentTab, currentStatus, onStatusChange }) => {
                                         </div>
                                     </div>
                                 ) : (
-                                    // Карточка для коллекции (уже отсортирована)
                                     <Card 
                                         key={item.id || item._id || `collection-${index}`}
                                         item={item}
