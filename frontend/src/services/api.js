@@ -1,7 +1,5 @@
 const API_BASE_URL = "http://localhost:8000";
 
-// Универсальная функция для авторизованных запросов
-// Универсальная функция для авторизованных запросов
 export const fetchAuth = async (url, options = {}) => {
     const accessToken = localStorage.getItem("access_token");
     
@@ -29,10 +27,8 @@ export const fetchAuth = async (url, options = {}) => {
 
         console.log(`📡 Response status: ${response.status} ${response.statusText}`);
 
-        // Логируем заголовки ответа
         console.log('📋 Response headers:', Object.fromEntries(response.headers.entries()));
 
-        // Пробуем получить тело ответа для отладки
         const responseText = await response.text();
         console.log('📄 Response body:', responseText);
 
@@ -53,7 +49,7 @@ export const fetchAuth = async (url, options = {}) => {
                     }
                 }
             } catch (e) {
-                // Не удалось распарсить JSON
+                // couldn't parse JSON
             }
             
             throw new Error(`422 Validation Error: ${errorDetails}`);
@@ -70,7 +66,6 @@ export const fetchAuth = async (url, options = {}) => {
             throw new Error(`Server error: ${response.status} - ${responseText.substring(0, 100)}`);
         }
 
-        // Пробуем парсить JSON
         try {
             return responseText ? JSON.parse(responseText) : {};
         } catch (e) {
@@ -88,7 +83,7 @@ export const fetchAuth = async (url, options = {}) => {
     }
 };
 
-// Функции аутентификации
+// auth function
 export const authAPI = {
     login: async (username, password) => {
         const response = await fetch(`${API_BASE_URL}/auth/token`, {
@@ -121,7 +116,7 @@ export const authAPI = {
     }
 };
 
-// Функции для фильмов
+// function for movies
 export const moviesAPI = {
     getMovies: (status = "All") => 
         fetchAuth(status === "All" 
@@ -165,7 +160,7 @@ export const moviesAPI = {
         })
 };
 
-// Функции для сериалов
+// function for series
 export const seriesAPI = {
     getSeries: (status = "All") => 
         fetchAuth(status === "All" 
@@ -192,7 +187,7 @@ export const seriesAPI = {
         })
 };
 
-// Функции для книг
+// function for books
 export const booksAPI = {
     getBooks: (status = "All") => 
         fetchAuth(status === "All" 
@@ -219,7 +214,7 @@ export const booksAPI = {
         })
 };
 
-// Вспомогательные функции
+// useful functions
 export const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
