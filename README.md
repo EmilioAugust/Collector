@@ -20,6 +20,7 @@ The project includes user authentication, search, filters, statuses, pagination,
 - FastAPI
 - JWT Authentication
 - REST API
+- Pytest
 
 ---
 
