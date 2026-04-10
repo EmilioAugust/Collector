@@ -1,5 +1,5 @@
-![lang ru](https://img.shields.io/badge/lang-ru-blue)
-![lang en](https://img.shields.io/badge/lang-en-red)
+[![lang ru](https://img.shields.io/badge/lang-ru-blue)](https://github.com/EmilioAugust/Collector/blob/main/README.ru.md)
+[![lang en](https://img.shields.io/badge/lang-en-red)](https://github.com/EmilioAugust/Collector/blob/main/README.md)
 
 # Collector
 **Collector** is a full-stack application for managing your personal collection of movies, TV series, and books.  
@@ -20,6 +20,7 @@ The project includes user authentication, search, filters, statuses, pagination,
 - FastAPI
 - JWT Authentication
 - REST API
+- Pytest
 
 ---
 
@@ -46,7 +47,7 @@ collector/
 ```
 ---
 
-## 🐳 Docker Usage (recommended)
+## Docker Usage (recommended)
 
 **1. Build the image**
 ```bash
@@ -59,13 +60,13 @@ http://localhost:3000/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 PRs are welcome!
 Feel free to add new sources or improve code structure.
 
 ---
 
-## 📄 License
+## License
 
 MIT — free for all use.

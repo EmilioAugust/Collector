@@ -9,7 +9,6 @@ const Card = ({
     onAdd, 
     isSearchResult = false 
 }) => {
-    // Функция для получения года из даты
     const getYearFromDate = (dateString) => {
         if (!dateString) return null;
         try {
@@ -20,21 +19,17 @@ const Card = ({
         }
     };
 
-    // Функция для извлечения годов сериала (работает для поиска и коллекции)
     const getSeriesYears = () => {
         if (type !== 'series') return null;
 
-        // Пробуем разные поля для даты премьеры
         const premiereDate = item.premiered || item.first_air_date || item.release_date;
         const endDate = item.ended || item.last_air_date;
         
-        // Получаем год начала
         let startYear = null;
         if (premiereDate) {
             startYear = getYearFromDate(premiereDate);
         }
         
-        // Если нет даты премьеры, пробуем год из других полей
         if (!startYear) {
             if (item.year && !isNaN(parseInt(item.year))) {
                 startYear = parseInt(item.year);
@@ -47,18 +42,15 @@ const Card = ({
         
         if (!startYear) return null;
         
-        // Получаем год окончания
         let endYear = null;
         if (endDate) {
             endYear = getYearFromDate(endDate);
         }
         
-        // Если нет даты окончания, проверяем другие поля
         if (!endYear && item.last_air_year) {
             endYear = parseInt(item.last_air_year);
         }
         
-        // Формируем строку с годами
         if (endYear) {
             return `${startYear} - ${endYear}`;
         } else {
@@ -66,7 +58,6 @@ const Card = ({
         }
     };
 
-    // Функция для получения года для фильмов и книг
     const getSimpleYear = () => {
         if (type === 'series') return null;
         
@@ -79,23 +70,19 @@ const Card = ({
         return null;
     };
 
-    // Функция для получения имени
     const getName = () => {
         return item.name || item.title || item.Title || 'Untitled';
     };
 
-    // Функция для получения автора (для книг)
     const getAuthor = () => {
         if (type !== 'books') return null;
         return item.author || item.author_name;
     };
 
-    // Функция для получения статуса (только для коллекции)
     const getStatus = () => {
         return isSearchResult ? null : (item.status || '');
     };
 
-    // Получаем данные
     const name = getName();
     const seriesYears = getSeriesYears();
     const simpleYear = getSimpleYear();
@@ -103,10 +90,8 @@ const Card = ({
     const status = getStatus();
     const normalizedStatus = status ? status.toLowerCase() : '';
     
-    // Определяем что показывать как год
     const displayYear = type === 'series' ? seriesYears : simpleYear;
     
-    // Определяем источник изображения
     let imageSrc = '';
     let hasImage = false;
     
@@ -119,10 +104,8 @@ const Card = ({
         hasImage = imageSrc && imageSrc !== 'N/A' && imageSrc !== 'null' && imageSrc !== '';
     }
     
-    // Первая буква для placeholder
     const firstLetter = name.charAt(0).toUpperCase();
     
-    // Обработчики событий
     const handleStatusChange = (e) => {
         e.stopPropagation();
         const newStatus = e.target.value;
@@ -153,7 +136,6 @@ const Card = ({
         }
     };
     
-    // Определяем доступные статусы (только для коллекции)
     const getAvailableStatuses = () => {
         if (!isSearchResult && status) {
             if (type === 'movies' || type === 'series') {

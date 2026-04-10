@@ -1,8 +1,8 @@
-![lang en](https://img.shields.io/badge/lang-en-red)
-![lang ru](https://img.shields.io/badge/lang-ru-blue)
+[![lang en](https://img.shields.io/badge/lang-en-red)](https://github.com/EmilioAugust/Collector/blob/main/README.md)
+[![lang ru](https://img.shields.io/badge/lang-ru-blue)](https://github.com/EmilioAugust/Collector/blob/main/README.ru.md)
 
 # Collector
-**Collector** Это полнофункциональное приложение для управления вашей личной коллекцией фильмов, сериалов и книг.
+**Collector** - это полнофункциональное приложение для управления вашей личной коллекцией фильмов, сериалов и книг.
 Проект включает в себя аутентификацию пользователей, поиск, фильтры, статусы, пагинацию и темную/светлую тему оформления.
 
 ---
@@ -20,10 +20,11 @@
 - FastAPI
 - JWT Authentication
 - REST API
+- Pytest
 
 ---
 
-## Features
+## Функции
 - Регистрация и вход пользователя
 - Аутентификация на основе JWT
 - Поиск по названию
@@ -59,13 +60,13 @@ http://localhost:3000/
 
 ---
 
-## 🤝 Вклад
+## Вклад
 
 PR приветствуются!
 Вы можете добавить новые источники, улучшить структуру или предложить новые функции.
 
 ---
 
-## 📄 Лицензия
+## Лицензия
 
 MIT — можно использовать в любом проекте.

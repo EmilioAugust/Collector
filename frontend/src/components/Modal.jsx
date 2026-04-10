@@ -29,7 +29,6 @@ const Modal = ({ item, type, isOpen, onClose, onStatusChange, onDelete }) => {
     const normalizedStatus = currentStatus.toLowerCase();
     const displayRating = rating || '';
     
-    // Определяем доступные статусы
     const getAvailableStatuses = () => {
         if (type === 'movies' || type === 'series') {
             return ['Watched', 'Watching', 'Planning'];
@@ -42,11 +41,9 @@ const Modal = ({ item, type, isOpen, onClose, onStatusChange, onDelete }) => {
     const availableStatuses = getAvailableStatuses();
     const otherStatuses = availableStatuses.filter(s => s !== currentStatus);
     
-    // Форматируем даты для сериалов
     const releaseDate = premiered ? formatSeriesDate(premiered) : year || '';
     const endedDate = ended ? formatSeriesDate(ended) : '';
     
-    // Форматируем годы для отображения в карточке
     const getSeriesYearsDisplay = () => {
         if (type !== 'series') return year || '';
         
