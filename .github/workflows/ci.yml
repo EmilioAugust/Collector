@@ -19,4 +19,11 @@ jobs:
       - name: Run Tests
         run: |
           cd backend
-          pytest
+          pytest -v --tb=short
+        shell: bash
+        
+      - name: Debug directory structure
+        run: |
+          pwd
+          ls -la
+          ls -la backend/ || echo "backend folder not found"
