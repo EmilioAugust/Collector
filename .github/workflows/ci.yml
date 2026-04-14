@@ -3,6 +3,10 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+          DATABASE_URL: ${{ secrets.URL_DB }}
+          CLEAN_DATABASE_URL: ${{ secrets.URL_CLEAN_DB }}
+          DEBUG: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -27,10 +31,6 @@ jobs:
         run: |
           cd backend
           pytest -v --tb=short
-        env:
-          DATABASE_URL: ${{ secrets.URL_DB }}
-          CLEAN_DATABASE_URL: ${{ secrets.URL_CLEAN_DB }}
-          DEBUG: true
       
       - name: Debug directory structure (опционально)
         if: failure()
