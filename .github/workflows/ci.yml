@@ -21,7 +21,9 @@ jobs:
         working-directory: backend
       
       - name: Run Tests
-        run: pytest -v --tb=short
+        run: |
+          cd backend
+          pytest -v --tb=short
         working-directory: backend
       
       - name: Debug (опционально)
