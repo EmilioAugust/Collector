@@ -16,12 +16,18 @@ jobs:
         run: |
           cd backend
           pip install -r requirements.txt
+
+      - name: Create test environment file
+        run: |
+          cat > backend/.test.env << 'EOF'
+          ${{ secrets.TEST_ENV_CONTENTS }}
+          EOF
       
       - name: Run Tests
         run: |
           cd backend
           set -a
-          source .test.env
+          source backend/.test.env
           set +a
           pytest -v --tb=short
       
