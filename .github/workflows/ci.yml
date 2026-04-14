@@ -26,10 +26,11 @@ jobs:
       - name: Run Tests
         run: |
           cd backend
-          set -a
-          source backend/.test.env
-          set +a
           pytest -v --tb=short
+        env:
+          DATABASE_URL: ${{ secrets.URL_DB }}
+          CLEAN_DATABASE_URL: ${{ secrets.URL_CLEAN_DB }}
+          DEBUG: true
       
       - name: Debug directory structure (опционально)
         if: failure()
