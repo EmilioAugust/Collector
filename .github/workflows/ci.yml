@@ -17,13 +17,8 @@ jobs:
         working-directory: backend
 
       - name: Run Tests
-        run: |
-          cd backend
-          pytest -v --tb=short
-        shell: bash
+        run: pytest -v --tb=short
+        working-directory: backend
+        env:
+          PYTHONPATH: .
         
-      - name: Debug directory structure
-        run: |
-          pwd
-          ls -la
-          ls -la backend/ || echo "backend folder not found"
