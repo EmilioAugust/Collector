@@ -13,13 +13,23 @@ jobs:
           python-version: "3.13"
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
-        working-directory: backend
-
+        run: |
+          cd backend
+          pip install -r requirements.txt
+      
       - name: Run Tests
-        run: pytest -v --tb=short
-        working-directory: backend
-        env:
-          .test.env
-          
-        
+        run: |
+          cd backend
+          set -a
+          source .test.env
+          set +a
+          pytest -v --tb=short
+      
+      - name: Debug directory structure (опционально)
+        if: failure()
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Backend directory contents:"
+          ls -la backend/ || echo "backend folder not found"
+          echo "Tests directory:"
+          ls -la backend/tests/ || echo "tests folder not found"
