@@ -4,9 +4,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-          DATABASE_URL: ${{ secrets.URL_DB }}
-          CLEAN_DATABASE_URL: ${{ secrets.URL_CLEAN_DB }}
-          DEBUG: true
+      DATABASE_URL: ${{ secrets.URL_DB }}
+      CLEAN_DATABASE_URL: ${{ secrets.URL_CLEAN_DB }}
+      DEBUG: true
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -17,26 +17,16 @@ jobs:
           python-version: "3.13"
       
       - name: Install dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-
-      - name: Create test environment file
-        run: |
-          cat > backend/.test.env << 'EOF'
-          ${{ secrets.TEST_ENV_CONTENTS }}
-          EOF
+        run: pip install -r requirements.txt
+        working-directory: backend
       
       - name: Run Tests
-        run: |
-          cd backend
-          pytest -v --tb=short
+        run: pytest -v --tb=short
+        working-directory: backend
       
-      - name: Debug directory structure (опционально)
+      - name: Debug (опционально)
         if: failure()
         run: |
           echo "Current directory: $(pwd)"
-          echo "Backend directory contents:"
           ls -la backend/ || echo "backend folder not found"
-          echo "Tests directory:"
           ls -la backend/tests/ || echo "tests folder not found"
