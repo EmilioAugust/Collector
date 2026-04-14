@@ -16,8 +16,8 @@ jobs:
         run: pip install -r requirements.txt
         working-directory: backend
 
+      - name: Change directory
+        run: cd backend
+
       - name: Run Tests
         run: pytest
-        working-directory: backend
-        env:
-          PYTHONPATH: .
