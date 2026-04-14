@@ -1,49 +1,26 @@
-from tests.conftest import client
+import pytest
 
-def test_register_user(client):
+@pytest.mark.parametrize("username, email, password, status_code, expected_result", [
+    ("123tes1t123", "123tes11t@example.com", "test123", 200, {'message': 'User registered!'}),
+    ("123tes1t123", "123tes11t@example.com", "test123", 400, {"detail": "User already exists."})])
+def test_register_user(client, username, email, password, status_code, expected_result):
     response = client.post(
         "/auth/register",
         json={
-            "username": "123tes1t123",
-            "email": "123tes11t@example.com",
-            "password": "test123"
+            "username": username,
+            "email": email,
+            "password": password
         }
     )
-    assert response.status_code == 200
-    data = response.json()
-    assert data == {'message': 'User registered!'}
-
-def test_register_existing_user(client):
-    payload = {
-        "username": "test",
-        "email": "test@example.com",
-        "password": "test123"
-    }
-
-    client.post("/auth/register", json=payload)
-
-    response = client.post("/auth/register", json=payload)
-    assert response.status_code == 400
-    assert response.json()["detail"] in [
-        "User already exists.",
-        "Email or username already exists."
-    ]
+    assert response.status_code == status_code
+    assert response.json() == expected_result
 
 def test_login_user(client):
     response = client.post(
-        "/auth/register",
-        json={
-            "username": "login",
-            "email": "login@example.com",
-            "password": "123pass123"
-        }
-    )
-
-    response = client.post(
         "/auth/token",
         data={
-            "username": "login",
-            "password": "123pass123"
+            "username": "123tes1t123",
+            "password": "test123"
         }
     )
     assert response.status_code == 200
@@ -63,5 +40,4 @@ def test_wrong_login_user(client):
 
 def test_protected_endpoint_requires_auth(client):
     response = client.get("/films/show_movies")
-
     assert response.status_code == 401

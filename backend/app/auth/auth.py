@@ -25,18 +25,15 @@ async def get_current_user(token: str = Depends(oauth2_bearer), db: Session = De
 
 @auth_router.post('/register')
 async def register_user(user: CreateUser, db: Session = Depends(get_db)):
-    try:
-        existing_user = db.query(Users).filter(Users.username == user.username).first()
-        if existing_user:
-            raise HTTPException(status_code=400, detail="User already exists.")
-        hashed_password = await get_password_hash(user.password)
-        new_user = Users(username=user.username, email=user.email, hashed_password=hashed_password)
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        return {'message': 'User registered!'}
-    except IntegrityError:
-        raise HTTPException(status_code=400, detail="Email already exists.")
+    existing_user = db.query(Users).filter(Users.username == user.username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="User already exists.")
+    hashed_password = await get_password_hash(user.password)
+    new_user = Users(username=user.username, email=user.email, hashed_password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {'message': 'User registered!'}
 
 @auth_router.post('/token')
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):

@@ -1,53 +1,31 @@
-from tests.conftest import client
+import pytest
 
 # adding series
-def test_adding_series(client, auth_headers):
+@pytest.mark.parametrize("tvmaze_id, status, status_code, expected_result", [
+    ("169", "Watched", 200, {"message": "Series added to your collection."}),
+    ("169", "Watched", 409, {"detail": "Series already exists in collection."})
+])
+def test_adding_series(client, auth_headers, tvmaze_id, status, status_code, expected_result):
     response = client.post(
         "/tv_shows/add_series",
         json={
-            "tvmaze_id": "169",
-            "status": "Watched"
+            "tvmaze_id": tvmaze_id,
+            "status": status
         },
         headers=auth_headers
     )
 
-    assert response.status_code == 200
-    assert response.json()["message"] == "Series added to your collection."
+    assert response.status_code == status_code
+    assert response.json() == expected_result
 
-def test_adding_existing_series(client, auth_headers):
-    client.post(
-        "/tv_shows/add_series",
-        json={
-            "tvmaze_id": "169",
-            "status": "Watched"
-        },
-        headers=auth_headers
-    )
-
+def test_adding_series_without_login(client, series_payload):
     response = client.post(
         "/tv_shows/add_series",
-        json={
-            "tvmaze_id": "169",
-            "status": "Watched"
-        },
-        headers=auth_headers
-    )
-
-    assert response.status_code == 409
-    assert response.json()["detail"] == "Series already exists in collection."
-
-def test_adding_series_without_login(client):
-    response = client.post(
-        "/tv_shows/add_series",
-        json={
-            "tvmaze_id": "169",
-            "status": "Watched"
-        },
+        json=series_payload,
     )
 
     assert response.status_code == 401
     assert response.json()["detail"] == "Not authenticated"
-
 
 # testing showing series
 def test_showing_series_results(client, auth_headers):
@@ -70,15 +48,6 @@ def test_showing_series_results(client, auth_headers):
     assert "ended" in item
 
 def test_showing_series(client, auth_headers):
-    client.post(
-        "/tv_shows/add_series",
-        json={
-            "tvmaze_id": "169",
-            "status": "Watching"
-        },
-        headers=auth_headers
-    )
-
     response = client.get(
         "/tv_shows/show_series",
         headers=auth_headers
@@ -97,8 +66,8 @@ def test_showing_series(client, auth_headers):
     assert "imdb_rating" in item
     assert "status" in item
 
-def test_showing_series_empty(client, auth_headers):
-    response = client.get(
+def test_showing_series_empty(clean_client, auth_headers):
+    response = clean_client.get(
         "/tv_shows/show_series",
         headers=auth_headers
     )
@@ -107,18 +76,10 @@ def test_showing_series_empty(client, auth_headers):
     assert response.json()["detail"] == "List of series is empty"
 
 def test_showing_series_with_status(client, auth_headers):
-    client.post(
-        "/tv_shows/add_series",
-        json={
-            "tvmaze_id": "169",
-            "status": "Watching"
-        },
-        headers=auth_headers
-    )
 
     response = client.get(
         "/tv_shows/show_series_status",
-        params={"status": "Watching"},
+        params={"status": "Watched"},
         headers=auth_headers
     )
 
@@ -137,21 +98,8 @@ def test_showing_series_with_status(client, auth_headers):
 
 #testing deleting series
 def test_delete_series(client, auth_headers):
-    add_response = client.post(
-        "/tv_shows/add_series",
-        json={
-            "tvmaze_id": "169",
-            "status": "Watching"
-        },
-        headers=auth_headers
-    )
-
-    assert add_response.status_code == 200
-    assert add_response.json()["message"] == "Series added to your collection."
-
     series_response = client.get(
-        "/tv_shows/show_series_status",
-        params={"status": "Watching"},
+        "/tv_shows/show_series",
         headers=auth_headers
     )
     series = series_response.json()
@@ -172,7 +120,7 @@ def test_delete_series(client, auth_headers):
 def test_delete_series_wrong_id(client, auth_headers):
     response = client.delete(
         "/tv_shows/delete_series",
-        params={"id": 5},
+        params={"id": 64},
         headers=auth_headers
     )
 
@@ -181,7 +129,7 @@ def test_delete_series_wrong_id(client, auth_headers):
 
 #testing update status
 def test_update_status(client, auth_headers):
-    add_response = client.post(
+    client.post(
         "/tv_shows/add_series",
         json={
             "tvmaze_id": "169",
@@ -214,7 +162,7 @@ def test_update_status(client, auth_headers):
 def test_update_status_wrong_id(client, auth_headers):
     response = client.put(
         "/tv_shows/update_series_status",
-        params={"id": 5, "status": "Watched"},
+        params={"id": 999, "status": "Watched"},
         headers=auth_headers
     )
 

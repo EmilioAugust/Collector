@@ -9,12 +9,16 @@ from environs import Env
 env = Env()
 env.read_env(".test.env")
 url_database = env("URL_DB")
-url_redis = env("URL_REDIS")
+url_clean_database = env("URL_CLEAN_DB")
+
+clean_engine = create_engine(url_clean_database)
+CleanTestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=clean_engine)
 
 engine = create_engine(url_database)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-@pytest.fixture(scope="function")
+# Normal Database
+@pytest.fixture(scope="session")
 def db():
     Base.metadata.create_all(engine)
     session = TestingSessionLocal()
@@ -24,7 +28,7 @@ def db():
         session.close()
         Base.metadata.drop_all(engine)
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def client(db):
     def override_get_db():
         try:
@@ -32,6 +36,32 @@ def client(db):
         finally:
             pass
 
+    app.dependency_overrides[get_db] = override_get_db
+
+    with TestClient(app) as client:
+        yield client
+
+    app.dependency_overrides.clear()
+
+# Clean Database
+@pytest.fixture(scope="function")
+def clean_db():
+    Base.metadata.drop_all(clean_engine)
+    Base.metadata.create_all(clean_engine)
+
+    session = CleanTestingSessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()
+
+@pytest.fixture(scope="function")
+def clean_client(clean_db):
+    def override_get_db():
+        try:
+            yield clean_db
+        finally:
+            pass
     app.dependency_overrides[get_db] = override_get_db
 
     with TestClient(app) as client:
@@ -51,3 +81,30 @@ def auth_headers(client):
     response = client.post('/auth/token', data=payload)
     token = response.json()['access_token']
     return {"Authorization": f"Bearer {token}"}
+
+# Payloads
+
+@pytest.fixture
+def book_payload():
+    payload = {
+        "olib_id": "/works/OL82563W",
+        "author": "J. K. Rowling",
+        "title": "Harry Potter and the Philosopher's Stone",
+        "cover": "OL22856696M",
+        "status": "Read"
+    }
+    return payload
+
+@pytest.fixture
+def movie_payload():
+    return {
+            "imdb_id": "tt0068646",
+            "status": "Watched"
+        }
+
+@pytest.fixture
+def series_payload():
+    return {
+            "tvmaze_id": "169",
+            "status": "Watched"
+        }

@@ -18,7 +18,7 @@ async def showing_search_results(query: str, page: int = 1, limit: int = 10, cur
 
 @movies_router.post("/add_movies")
 async def add_movies(query: AddMovies, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
-    #r.delete(f"usermovies:{current_user.id}")
+    # r.delete(f"usermovies:{current_user.id}")
     return await adding_movies(query, current_user=current_user.id, db=db)
 
 @movies_router.get("/show_movies")

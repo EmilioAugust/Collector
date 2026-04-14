@@ -18,7 +18,7 @@ async def showing_search_results(query: str, limit: int = 10, current_user: User
 
 @series_router.post("/add_series")
 async def add_series(tvmaze_id: AddSeries, current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
-    #r.delete(f"userseries:{current_user.id}")
+    # r.delete(f"userseries:{current_user.id}")
     return await adding_series(tvmaze_id, current_user=current_user.id, db=db)
 
 @series_router.get("/show_series")

@@ -4,12 +4,8 @@ services:
   db:
     image: postgres:15
     container_name: collector-postgres
-    environment:
-      # ЯВНО задаем все переменные, не используем env_file
-      POSTGRES_DB: Collector
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: iowa88
-      POSTGRES_HOST_AUTH_METHOD: trust
+    env_file:
+      - backend/.env
     ports:
       - "5432:5432"
     volumes:
@@ -27,8 +23,9 @@ services:
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: "postgresql+psycopg2://postgres:iowa88@db:5432/Collector"
       CORS_ORIGINS: "http://localhost:3000,http://frontend:80"
+    env_file:
+      - backend/.env
     depends_on:
       db:
         condition: service_healthy

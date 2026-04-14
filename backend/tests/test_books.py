@@ -1,61 +1,44 @@
-from tests.conftest import client
+import pytest
 
 # testing adding books
-def test_adding_books(client, auth_headers):
+@pytest.mark.parametrize(("olib_id, author, title, cover, status, status_code, expected_result"), [
+    ("/works/OL82563W",
+     "J. K. Rowling",
+     "Harry Potter and the Philosopher's Stone",
+     "OL22856696M",
+     "Read",
+     200,
+     {"message": "Book added to your collection."}),
+     
+     ("/works/OL82563W",
+     "J. K. Rowling",
+     "Harry Potter and the Philosopher's Stone",
+     "OL22856696M",
+     "Read",
+     409,
+     {"detail": "Book already exists in collection."})
+])
+@pytest.mark.slow
+def test_adding_books(client, auth_headers, olib_id, author, title, cover, status, status_code, expected_result):
     response = client.post(
         "/books/add_books",
         json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
+            "olib_id": olib_id,
+            "author": author,
+            "title": title,
+            "cover": cover,
+            "status": status
         },
         headers=auth_headers
     )
-    assert response.status_code == 200
-    assert response.json() == {"message": "Book added to your collection."}
+    assert response.status_code == status_code
+    assert response.json() == expected_result
 
-def test_adding_existing_book(client, auth_headers):
-    client.post(
-        "/books/add_books",
-        json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
-        },
-        headers=auth_headers
-    )
-
+def test_adding_book_without_login(client, book_payload):
     response = client.post(
         "/books/add_books",
-        json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
-        },
-        headers=auth_headers
+        json=book_payload,
     )
-
-    assert response.status_code == 409
-    assert response.json()["detail"] == "Book already exists in collection."
-
-def test_adding_book_without_login(client):
-    response = client.post(
-        "/books/add_books",
-        json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
-        },
-    )
-
     assert response.status_code == 401
     assert response.json()["detail"] == "Not authenticated"
 
@@ -79,20 +62,7 @@ def test_showing_books_search_results(client, auth_headers):
     assert "title" in item
 
     
-
-def test_showing_books(client, auth_headers):
-    client.post(
-        "/books/add_books",
-        json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
-        },
-        headers=auth_headers
-    )
-
+def test_showing_books(client, auth_headers, book_payload):
     response = client.get(
         "/books/show_books",
         headers=auth_headers
@@ -108,28 +78,7 @@ def test_showing_books(client, auth_headers):
     assert "cover" in item
     assert "status" in item
 
-def test_showing_books_empty(client, auth_headers):
-    response = client.get(
-        "/books/show_books",
-        headers=auth_headers
-    )
-    assert response.status_code == 200
-    assert response.json()["error"] == 404
-    assert response.json()["detail"] == "List of books is empty"
-
-def test_showing_books_with_status(client, auth_headers):
-    client.post(
-        "/books/add_books",
-        json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
-        },
-        headers=auth_headers
-    )
-
+def test_showing_books_with_status(client, auth_headers, book_payload):
     response = client.get(
         "/books/show_books_status",
         params={"status": "Read"},
@@ -147,19 +96,7 @@ def test_showing_books_with_status(client, auth_headers):
     assert "status" in item
 
 #testing deleting books
-def test_deleting_books(client, auth_headers):
-    client.post(
-        "/books/add_books",
-        json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
-        },
-        headers=auth_headers
-    )
-
+def test_deleting_books(client, auth_headers, book_payload):
     response = client.get(
         "/books/show_books",
         headers=auth_headers
@@ -190,16 +127,10 @@ def test_delete_book_wrong_id(client, auth_headers):
 
 
 #testing update status
-def test_update_status(client, auth_headers):
-    client.post(
+def test_update_status(client, auth_headers, book_payload):
+    response = client.post(
         "/books/add_books",
-        json={
-            "olib_id": "/works/OL82563W",
-            "author": "J. K. Rowling",
-            "title": "Harry Potter and the Philosopher's Stone",
-            "cover": "OL22856696M",
-            "status": "Read"
-        },
+        json=book_payload,
         headers=auth_headers
     )
 
@@ -231,3 +162,12 @@ def test_update_status_wrong_id(client, auth_headers):
 
     assert response.status_code == 404
     assert response.json()["detail"] == "Book not found in your collection"
+
+def test_showing_books_empty(clean_client, auth_headers):
+    response = clean_client.get(
+        "/books/show_books",
+        headers=auth_headers
+    )
+    assert response.status_code == 200
+    assert response.json()["error"] == 404
+    assert response.json()["detail"] == "List of books is empty"
