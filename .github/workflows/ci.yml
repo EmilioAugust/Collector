@@ -20,7 +20,9 @@ jobs:
         run: pip install -r backend/requirements.txt
       
       - name: Run Tests
-        run: pytest -v backend/tests/
+        run: |
+          cd backend
+          pytest -v
 
       - name: Debug (опционально)
         if: failure()
