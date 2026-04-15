@@ -30,5 +30,3 @@ jobs:
           echo "Current directory: $(pwd)"
           echo "Backend directory contents:"
           ls -la backend/ || echo "backend folder not found"
-          echo "Tests directory:"
-          ls -la backend/tests/ || echo "tests folder not found"
