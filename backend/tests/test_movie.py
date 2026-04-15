@@ -62,8 +62,8 @@ def test_showing_movies(client, auth_headers):
     assert "poster" in item
     assert "status" in item
 
-def test_showing_movies_empty(clean_client, auth_headers):
-    response = clean_client.get(
+def test_showing_movies_empty(client, auth_headers):
+    response = client.get(
         "/films/show_movies",
         headers=auth_headers
     )

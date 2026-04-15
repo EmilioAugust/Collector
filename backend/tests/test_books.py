@@ -163,8 +163,8 @@ def test_update_status_wrong_id(client, auth_headers):
     assert response.status_code == 404
     assert response.json()["detail"] == "Book not found in your collection"
 
-def test_showing_books_empty(clean_client, auth_headers):
-    response = clean_client.get(
+def test_showing_books_empty(client, auth_headers):
+    response = client.get(
         "/books/show_books",
         headers=auth_headers
     )

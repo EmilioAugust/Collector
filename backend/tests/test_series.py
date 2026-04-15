@@ -66,8 +66,8 @@ def test_showing_series(client, auth_headers):
     assert "imdb_rating" in item
     assert "status" in item
 
-def test_showing_series_empty(clean_client, auth_headers):
-    response = clean_client.get(
+def test_showing_series_empty(client, auth_headers):
+    response = client.get(
         "/tv_shows/show_series",
         headers=auth_headers
     )

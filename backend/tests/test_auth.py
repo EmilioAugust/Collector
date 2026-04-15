@@ -1,8 +1,9 @@
 import pytest
 
 @pytest.mark.parametrize("username, email, password, status_code, expected_result", [
-    ("123tes1t123", "123tes11t@example.com", "test123", 200, {'message': 'User registered!'}),
-    ("123tes1t123", "123tes11t@example.com", "test123", 400, {"detail": "User already exists."})])
+    ("123tes1t123511", "123tes1123t6@example.com", "test123", 200, {'message': 'User registered!'}),
+    ("123tes1t123511", "123tes1123t6@example.com", "test123", 400, {'detail': 'User already exists.'}),
+])
 def test_register_user(client, username, email, password, status_code, expected_result):
     response = client.post(
         "/auth/register",
@@ -17,10 +18,19 @@ def test_register_user(client, username, email, password, status_code, expected_
 
 def test_login_user(client):
     response = client.post(
+        "/auth/register",
+        json={
+            "username": "login",
+            "email": "login@example.com",
+            "password": "123pass123"
+        }
+    )
+
+    response = client.post(
         "/auth/token",
         data={
-            "username": "123tes1t123",
-            "password": "test123"
+            "username": "login",
+            "password": "123pass123"
         }
     )
     assert response.status_code == 200

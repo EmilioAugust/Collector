@@ -1,4 +1,5 @@
 import pytest
+from pathlib import Path
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -8,27 +9,37 @@ from environs import Env
 
 env = Env()
 env.read_env(".test.env")
-url_database = env("URL_DB")
-url_clean_database = env("URL_CLEAN_DB")
-
-clean_engine = create_engine(url_clean_database)
-CleanTestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=clean_engine)
+url_database = env("TEST_URL_DB")
+url_clean_database = env("TEST_URL_CLEAN_DB")
 
 engine = create_engine(url_database)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+clean_engine = create_engine(url_clean_database)
+CleanTestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=clean_engine)
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_db():
+    Base.metadata.create_all(engine)
+    yield
+    Base.metadata.drop_all(engine)
+
 # Normal Database
 @pytest.fixture(scope="session")
 def db():
-    Base.metadata.create_all(engine)
-    session = TestingSessionLocal()
+    connection = engine.connect()
+    transaction = connection.begin()
+
+    session = TestingSessionLocal(bind=connection)
+
     try:
         yield session
     finally:
         session.close()
-        Base.metadata.drop_all(engine)
+        transaction.rollback()
+        connection.close()
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def client(db):
     def override_get_db():
         try:
@@ -44,30 +55,30 @@ def client(db):
     app.dependency_overrides.clear()
 
 # Clean Database
-@pytest.fixture(scope="function")
-def clean_db():
-    Base.metadata.drop_all(clean_engine)
-    Base.metadata.create_all(clean_engine)
+# @pytest.fixture(scope="function")
+# def clean_db():
+#     Base.metadata.drop_all(clean_engine)
+#     Base.metadata.create_all(clean_engine)
 
-    session = CleanTestingSessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
+#     session = CleanTestingSessionLocal()
+#     try:
+#         yield session
+#     finally:
+#         session.close()
 
-@pytest.fixture(scope="function")
-def clean_client(clean_db):
-    def override_get_db():
-        try:
-            yield clean_db
-        finally:
-            pass
-    app.dependency_overrides[get_db] = override_get_db
+# @pytest.fixture(scope="function")
+# def clean_client(clean_db):
+#     def override_get_db():
+#         try:
+#             yield clean_db
+#         finally:
+#             pass
+#     app.dependency_overrides[get_db] = override_get_db
 
-    with TestClient(app) as client:
-        yield client
+#     with TestClient(app) as client:
+#         yield client
 
-    app.dependency_overrides.clear()
+#     app.dependency_overrides.clear()
 
 @pytest.fixture
 def auth_headers(client):
