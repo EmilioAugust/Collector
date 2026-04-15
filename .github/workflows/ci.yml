@@ -17,14 +17,14 @@ jobs:
           python-version: "3.13"
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements.txt  # Убрали cd backend
       
       - name: Run Tests
-        run: pytest -v --tb=short
+        run: pytest -v --tb=short  # Убрали cd backend
       
       - name: Debug (опционально)
         if: failure()
         run: |
           echo "Current directory: $(pwd)"
-          ls -la backend/ || echo "backend folder not found"
-          ls -la backend/tests/ || echo "tests folder not found"
+          echo "Tests directory:"
+          ls -la tests/
