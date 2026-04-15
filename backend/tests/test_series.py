@@ -1,22 +1,29 @@
-import pytest
-
 # adding series
-@pytest.mark.parametrize("tvmaze_id, status, status_code, expected_result", [
-    ("169", "Watched", 200, {"message": "Series added to your collection."}),
-    ("169", "Watched", 409, {"detail": "Series already exists in collection."})
-])
-def test_adding_series(client, auth_headers, tvmaze_id, status, status_code, expected_result):
+def test_adding_series(client, auth_headers, series_payload):
     response = client.post(
         "/tv_shows/add_series",
-        json={
-            "tvmaze_id": tvmaze_id,
-            "status": status
-        },
+        json=series_payload,
         headers=auth_headers
     )
 
-    assert response.status_code == status_code
-    assert response.json() == expected_result
+    assert response.status_code == 200
+    assert response.json()["message"] == "Series added to your collection."
+
+def test_adding_existing_series(client, auth_headers, series_payload):
+    client.post(
+        "/tv_shows/add_series",
+        json=series_payload,
+        headers=auth_headers
+    )
+
+    response = client.post(
+        "/tv_shows/add_series",
+        json=series_payload,
+        headers=auth_headers
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Series already exists in collection."
 
 def test_adding_series_without_login(client, series_payload):
     response = client.post(
@@ -47,7 +54,13 @@ def test_showing_series_results(client, auth_headers):
     assert "premiered" in item
     assert "ended" in item
 
-def test_showing_series(client, auth_headers):
+def test_showing_series(client, auth_headers, series_payload):
+    client.post(
+        "/tv_shows/add_series",
+        json=series_payload,
+        headers=auth_headers
+    )
+
     response = client.get(
         "/tv_shows/show_series",
         headers=auth_headers
@@ -75,7 +88,12 @@ def test_showing_series_empty(client, auth_headers):
     assert response.json()["error"] == 404
     assert response.json()["detail"] == "List of series is empty"
 
-def test_showing_series_with_status(client, auth_headers):
+def test_showing_series_with_status(client, auth_headers, series_payload):
+    client.post(
+        "/tv_shows/add_series",
+        json=series_payload,
+        headers=auth_headers
+    )
 
     response = client.get(
         "/tv_shows/show_series_status",
@@ -97,9 +115,19 @@ def test_showing_series_with_status(client, auth_headers):
     assert "status" in item
 
 #testing deleting series
-def test_delete_series(client, auth_headers):
+def test_delete_series(client, auth_headers, series_payload):
+    add_response = client.post(
+        "/tv_shows/add_series",
+        json=series_payload,
+        headers=auth_headers
+    )
+
+    assert add_response.status_code == 200
+    assert add_response.json()["message"] == "Series added to your collection."
+
     series_response = client.get(
-        "/tv_shows/show_series",
+        "/tv_shows/show_series_status",
+        params={"status": "Watched"},
         headers=auth_headers
     )
     series = series_response.json()
@@ -120,7 +148,7 @@ def test_delete_series(client, auth_headers):
 def test_delete_series_wrong_id(client, auth_headers):
     response = client.delete(
         "/tv_shows/delete_series",
-        params={"id": 64},
+        params={"id": 999},
         headers=auth_headers
     )
 
@@ -128,13 +156,10 @@ def test_delete_series_wrong_id(client, auth_headers):
     assert response.json()["detail"] == "Couldn't find this series"
 
 #testing update status
-def test_update_status(client, auth_headers):
+def test_update_status(client, auth_headers, series_payload):
     client.post(
         "/tv_shows/add_series",
-        json={
-            "tvmaze_id": "169",
-            "status": "Watching"
-        },
+        json=series_payload,
         headers=auth_headers
     )
 

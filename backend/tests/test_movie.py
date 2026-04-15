@@ -1,21 +1,28 @@
-import pytest
-
 # testing movie adding
-@pytest.mark.parametrize("imdb_id, status, status_code, expected_result", [
-    ("tt0068646", "Watched", 200, {"message": "Movie added to your collection."}),
-    ("tt0068646", "Watched", 409, {"detail": "Movie already exists in collection."})
-])
-def test_add_movie(client, auth_headers, imdb_id, status, status_code, expected_result):
+def test_add_movie(client, auth_headers, movie_payload):
     response = client.post(
         "/films/add_movies",
-        json={
-            "imdb_id": imdb_id,
-            "status": status
-        },
+        json=movie_payload,
         headers=auth_headers
     )
-    assert response.status_code == status_code
-    assert response.json() == expected_result
+    assert response.status_code == 200
+    assert response.json() == {"message": "Movie added to your collection."}
+
+def test_add_existing_movie(client, auth_headers, movie_payload):
+    client.post(
+        "/films/add_movies",
+        json=movie_payload,
+        headers=auth_headers
+    )
+
+    response = client.post(
+        "/films/add_movies",
+        json=movie_payload,
+        headers=auth_headers
+    )
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Movie already exists in collection."
+
 
 def test_add_movie_without_login(client, movie_payload):
     response = client.post(
@@ -46,7 +53,12 @@ def test_movie_search_results(client, auth_headers):
     assert "Type" in item
     assert "Poster" in item
 
-def test_showing_movies(client, auth_headers):
+def test_showing_movies(client, auth_headers, movie_payload):
+    client.post(
+        "/films/add_movies",
+        json=movie_payload,
+        headers=auth_headers
+    )
     response = client.get(
         "/films/show_movies",
         headers=auth_headers
@@ -73,7 +85,13 @@ def test_showing_movies_empty(client, auth_headers):
     assert data.get("detail") == "List of movies is empty"
 
 
-def test_showing_movies_with_status(client, auth_headers):
+def test_showing_movies_with_status(client, auth_headers, movie_payload):
+    response = client.post(
+        "/films/add_movies",
+        json=movie_payload,
+        headers=auth_headers
+    )
+
     response = client.get(
         "/films/show_movies_status",
         headers=auth_headers,
@@ -91,7 +109,15 @@ def test_showing_movies_with_status(client, auth_headers):
     assert "status" in item
 
 # testing deleteing movies
-def test_delete_movies(client, auth_headers):
+def test_delete_movies(client, auth_headers, movie_payload):
+    add_response = client.post(
+        "/films/add_movies",
+        json=movie_payload,
+        headers=auth_headers
+    )
+    assert add_response.status_code == 200
+    assert add_response.json() == {"message": "Movie added to your collection."}
+
     movies_response = client.get(
         "/films/show_movies",
         headers=auth_headers
@@ -113,7 +139,7 @@ def test_delete_movies(client, auth_headers):
 def test_delete_movies_wrong_id(client, auth_headers):
     response = client.delete(
         "/films/delete_movies",
-        params={"id": 5},
+        params={"id": 999},
         headers=auth_headers
     )
     assert response.status_code == 404
@@ -151,7 +177,7 @@ def test_update_status(client, auth_headers, movie_payload):
 def test_update_status_wrong_id(client, auth_headers):
     response = client.put(
         "/films/update_movies_status",
-        params={"id": 7, "status": "Watching"},
+        params={"id": 999, "status": "Watching"},
         headers=auth_headers
     )
     assert response.status_code == 404

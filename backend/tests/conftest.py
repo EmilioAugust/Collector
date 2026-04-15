@@ -25,7 +25,7 @@ def setup_db():
     Base.metadata.drop_all(engine)
 
 # Normal Database
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="function")
 def db():
     connection = engine.connect()
     transaction = connection.begin()
@@ -54,31 +54,6 @@ def client(db):
 
     app.dependency_overrides.clear()
 
-# Clean Database
-# @pytest.fixture(scope="function")
-# def clean_db():
-#     Base.metadata.drop_all(clean_engine)
-#     Base.metadata.create_all(clean_engine)
-
-#     session = CleanTestingSessionLocal()
-#     try:
-#         yield session
-#     finally:
-#         session.close()
-
-# @pytest.fixture(scope="function")
-# def clean_client(clean_db):
-#     def override_get_db():
-#         try:
-#             yield clean_db
-#         finally:
-#             pass
-#     app.dependency_overrides[get_db] = override_get_db
-
-#     with TestClient(app) as client:
-#         yield client
-
-#     app.dependency_overrides.clear()
 
 @pytest.fixture
 def auth_headers(client):

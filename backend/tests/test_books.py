@@ -1,38 +1,30 @@
 import pytest
 
 # testing adding books
-@pytest.mark.parametrize(("olib_id, author, title, cover, status, status_code, expected_result"), [
-    ("/works/OL82563W",
-     "J. K. Rowling",
-     "Harry Potter and the Philosopher's Stone",
-     "OL22856696M",
-     "Read",
-     200,
-     {"message": "Book added to your collection."}),
-     
-     ("/works/OL82563W",
-     "J. K. Rowling",
-     "Harry Potter and the Philosopher's Stone",
-     "OL22856696M",
-     "Read",
-     409,
-     {"detail": "Book already exists in collection."})
-])
-@pytest.mark.slow
-def test_adding_books(client, auth_headers, olib_id, author, title, cover, status, status_code, expected_result):
+def test_adding_books(client, auth_headers, book_payload):
     response = client.post(
         "/books/add_books",
-        json={
-            "olib_id": olib_id,
-            "author": author,
-            "title": title,
-            "cover": cover,
-            "status": status
-        },
+        json=book_payload,
         headers=auth_headers
     )
-    assert response.status_code == status_code
-    assert response.json() == expected_result
+    assert response.status_code == 200
+    assert response.json() == {"message": "Book added to your collection."}
+
+def test_adding_existing_book(client, auth_headers, book_payload):
+    client.post(
+        "/books/add_books",
+        json=book_payload,
+        headers=auth_headers
+    )
+
+    response = client.post(
+        "/books/add_books",
+        json=book_payload,
+        headers=auth_headers
+    )
+
+    assert response.status_code == 409
+    assert response.json()["detail"] == "Book already exists in collection."
 
 def test_adding_book_without_login(client, book_payload):
     response = client.post(
@@ -43,6 +35,7 @@ def test_adding_book_without_login(client, book_payload):
     assert response.json()["detail"] == "Not authenticated"
 
 #test showing books
+@pytest.mark.slow
 def test_showing_books_search_results(client, auth_headers):
     response = client.get(
         "/books/show_search_results_book",
@@ -62,7 +55,14 @@ def test_showing_books_search_results(client, auth_headers):
     assert "title" in item
 
     
+
 def test_showing_books(client, auth_headers, book_payload):
+    client.post(
+        "/books/add_books",
+        json=book_payload,
+        headers=auth_headers
+    )
+
     response = client.get(
         "/books/show_books",
         headers=auth_headers
@@ -79,6 +79,12 @@ def test_showing_books(client, auth_headers, book_payload):
     assert "status" in item
 
 def test_showing_books_with_status(client, auth_headers, book_payload):
+    client.post(
+        "/books/add_books",
+        json=book_payload,
+        headers=auth_headers
+    )
+
     response = client.get(
         "/books/show_books_status",
         params={"status": "Read"},
@@ -97,6 +103,12 @@ def test_showing_books_with_status(client, auth_headers, book_payload):
 
 #testing deleting books
 def test_deleting_books(client, auth_headers, book_payload):
+    client.post(
+        "/books/add_books",
+        json=book_payload,
+        headers=auth_headers
+    )
+
     response = client.get(
         "/books/show_books",
         headers=auth_headers
@@ -119,7 +131,7 @@ def test_deleting_books(client, auth_headers, book_payload):
 def test_delete_book_wrong_id(client, auth_headers):
     response = client.delete(
         "/books/delete_books",
-        params={"id": 3},
+        params={"id": 999},
         headers=auth_headers
     )
     assert response.status_code == 404
@@ -128,7 +140,7 @@ def test_delete_book_wrong_id(client, auth_headers):
 
 #testing update status
 def test_update_status(client, auth_headers, book_payload):
-    response = client.post(
+    client.post(
         "/books/add_books",
         json=book_payload,
         headers=auth_headers
@@ -156,7 +168,7 @@ def test_update_status(client, auth_headers, book_payload):
 def test_update_status_wrong_id(client, auth_headers):
     response = client.put(
         "/books/update_books_status",
-        params={"id": 3, "status": "Reading"},
+        params={"id": 999, "status": "Reading"},
         headers=auth_headers
     )
 

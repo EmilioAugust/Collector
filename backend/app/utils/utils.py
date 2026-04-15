@@ -72,7 +72,7 @@ async def fetch_movie_details(imdb_id: str):
 
 async def fetch_search_books(search: str):
     url = f'https://openlibrary.org/search.json?q={search}'
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=httpx.Timeout(120.0, read=30.0)) as client:
         response = await client.get(url)
     data = response.json()
     result = []
