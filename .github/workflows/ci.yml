@@ -21,4 +21,10 @@ jobs:
       
       - name: Run Tests
         run: pytest -v --tb=short
-  
+
+      - name: Debug (опционально)
+        if: failure()
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Tests directory:"
+          ls -la tests/
