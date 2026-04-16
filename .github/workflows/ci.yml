@@ -11,7 +11,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          POSTGRES_PASSWORD: postgres
           POSTGRES_DB: TestCollector
         ports:
           - 5432:5432
@@ -36,7 +36,7 @@ jobs:
     - name: Run tests
       run: pytest
       env:
-        URL_DB: postgresql://postgres:${{ secrets.TEST_DB_PASSWORD }}@localhost:5432/TestCollector
+        URL_DB: postgresql://postgres:postgres@localhost:5432/TestCollector
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         ALGORITHM: ${{ secrets.ALGORITHM }}
         OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
