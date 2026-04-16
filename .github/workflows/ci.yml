@@ -35,3 +35,5 @@ jobs:
     
     - name: Run tests
       run: pytest
+      env:
+        URL_DB: postgresql://postgres:iowa88@localhost:5432/TestCollector
