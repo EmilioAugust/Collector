@@ -6,6 +6,7 @@ jobs:
     environment: testing
     env:
       TEST_URL_DB: ${{ secrets.TEST_URL_DB }}
+      URL_DB: ${{ secrets.URL_DB }}
       DEBUG: true
     steps:
       - name: Checkout code
