@@ -11,20 +11,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       
+      - name: Debug structure
+        run: |
+          echo "=== Current directory ==="
+          pwd
+          echo "=== Files in root ==="
+          ls -la
+          echo "=== Checking requirements ==="
+          test -f requirements.txt && echo "✅ requirements.txt found" || echo "❌ requirements.txt missing"
+          echo "=== Checking tests ==="
+          test -d tests && echo "✅ tests folder found" || echo "❌ tests folder missing"
+      
       - name: Install Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.13"
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
       
       - name: Run Tests
-        run: pytest
-
-      - name: Debug (опционально)
-        if: failure()
-        run: |
-          echo "Current directory: $(pwd)"
-          echo "Backend directory contents:"
-          ls -la Collector/ || echo "backend folder not found"
+        run: pytest -v
