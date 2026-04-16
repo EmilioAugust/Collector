@@ -28,14 +28,14 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt || true
-        
+
     - name: Create necessary directories
       run: |
         mkdir -p app/logs
     
     - name: Create .test.env
       run: |
-        echo "TEST_URL_DB=postgresql://postgres:${{ secrets.TEST_DB_PASSWORD }}@localhost:5432/TestCollector" > .test.env
+        echo "TEST_URL_DB=postgresql://postgres:iowa88@localhost:5432/TestCollector" > .test.env
     
     - name: Run tests
       run: pytest
