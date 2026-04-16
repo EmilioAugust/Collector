@@ -3,28 +3,13 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
-    services: 
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_DB: testdb
-          POSTGRES_USER: tester
-          POSTGRES_PASSWORD: testpass123
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-    
+    environment: testing
     env:
-      TEST_URL_DB: postgresql://tester:testpass123@localhost:5432/testdb
+      TEST_URL_DB: postgresql://postgres:iowa88@localhost:5432/TestCollector
       DEBUG: true
-    
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
       
       - name: Debug structure
         run: |
@@ -38,7 +23,7 @@ jobs:
           test -d tests && echo "✅ tests folder found" || echo "❌ tests folder missing"
       
       - name: Install Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: "3.13"
       
@@ -46,4 +31,4 @@ jobs:
         run: pip install -r requirements.txt
       
       - name: Run Tests
-        run: pytest tests/ -v
+        run: pytest
