@@ -37,3 +37,7 @@ jobs:
       run: pytest
       env:
         URL_DB: postgresql://postgres:iowa88@localhost:5432/TestCollector
+        SECRET_KEY: 62ee2c683bc919a0e1b43d8c320cf8188946b31a451312d8b4531e3fa81f667a
+        ALGORITHM: HS256
+        OMDB_API_KEY: 9d1e9c61
+        
