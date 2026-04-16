@@ -38,7 +38,7 @@ jobs:
       env:
         TEST_URL_DB: postgresql://postgres:postgres@localhost:5432/TestCollector
         URL_DB: postgresql://postgres:postgres@localhost:5432/TestCollector
-        SECRET_KEY: 62ee2c683bc919a0e1b43d8c320cf8188946b31a451312d8b4531e3fa81f667a
+        SECRET_KEY: ${{ secrets.SECRET_KEY }}
         ALGORITHM: HS256
-        OMDB_API_KEY: 9d1e9c61
+        OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
         
