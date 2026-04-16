@@ -122,7 +122,8 @@ def test_deleting_books(client, auth_headers, book_payload):
     delete_response = client.delete(
         "/books/delete_books",
         params={"id": item["id"]},
-        headers=auth_headers
+        headers=auth_headers,
+        timeout=30.0
     )
 
     assert delete_response.status_code == 200
@@ -159,7 +160,8 @@ def test_update_status(client, auth_headers, book_payload):
     response = client.put(
         "/books/update_books_status",
         params={"id": item["id"], "status": "Reading"},
-        headers=auth_headers
+        headers=auth_headers,
+        timeout=30.0
     )
 
     assert response.status_code == 200
