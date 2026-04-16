@@ -3,9 +3,9 @@ on: [push, pull_request]
 jobs:
   test:
     runs-on: ubuntu-latest
+    environment: testing
     env:
-      DATABASE_URL: ${{ secrets.URL_DB }}
-      CLEAN_DATABASE_URL: ${{ secrets.URL_CLEAN_DB }}
+      DATABASE_URL: ${{ secrets.TEST_URL_DB }}
       DEBUG: true
     steps:
       - name: Checkout code
@@ -17,10 +17,10 @@ jobs:
           python-version: "3.13"
       
       - name: Install dependencies
-        run: pip install -r backend/requirements.txt
+        run: pip install -r requirements.txt
       
       - name: Run Tests
-        run: pytest -v
+        run: pytest
 
       - name: Debug (опционально)
         if: failure()
