@@ -1,34 +1,37 @@
-name: Run Tests for Backend
+name: CI
+
 on: [push, pull_request]
+
 jobs:
   test:
     runs-on: ubuntu-latest
-    environment: testing
-    env:
-      TEST_URL_DB: postgresql://postgres:iowa88@localhost:5432/TestCollector
-      DEBUG: true
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: ${{ secrets.TEST_DB_PASSWORD }}
+          POSTGRES_DB: TestCollector
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-      
-      - name: Debug structure
-        run: |
-          echo "=== Current directory ==="
-          pwd
-          echo "=== Files in root ==="
-          ls -la
-          echo "=== Checking requirements ==="
-          test -f requirements.txt && echo "✅ requirements.txt found" || echo "❌ requirements.txt missing"
-          echo "=== Checking tests ==="
-          test -d tests && echo "✅ tests folder found" || echo "❌ tests folder missing"
-      
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.13"
-      
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      
-      - name: Run Tests
-        run: pytest
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt || true
+    
+    - name: Create .test.env
+      run: |
+        echo "TEST_URL_DB=postgresql://postgres:${{ secrets.TEST_DB_PASSWORD }}@localhost:5432/TestCollector" > .test.env
+    
+    - name: Run tests
+      run: pytest
