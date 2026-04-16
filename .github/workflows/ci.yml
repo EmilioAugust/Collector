@@ -36,6 +36,7 @@ jobs:
     - name: Run tests
       run: pytest
       env:
+        TEST_URL_DB: postgresql://postgres:postgres@localhost:5432/TestCollector
         URL_DB: postgresql://postgres:postgres@localhost:5432/TestCollector
         SECRET_KEY: ${{ secrets.SECRET_KEY }}
         ALGORITHM: ${{ secrets.ALGORITHM }}
