@@ -10,13 +10,9 @@ from environs import Env
 env = Env()
 env.read_env(".test.env")
 url_database = env("TEST_URL_DB")
-url_clean_database = env("TEST_URL_CLEAN_DB")
 
 engine = create_engine(url_database)
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-clean_engine = create_engine(url_clean_database)
-CleanTestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=clean_engine)
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_db():
