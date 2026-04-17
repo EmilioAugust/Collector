@@ -94,7 +94,7 @@ def clean_description(raw_description: str):
 
 async def fetch_book_details(olib_id: str, author: str, title: str, cover: str):
     url = f'https://openlibrary.org{olib_id}.json'
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=httpx.Timeout(120.0, read=30.0)) as client:
         response = await client.get(url)
     data = response.json()
     if "description" in data:
