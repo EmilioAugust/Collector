@@ -37,16 +37,6 @@ The project includes user authentication, search, filters, statuses, pagination,
 
 ---
 
-## Project Structure
-```bash
-collector/
-├── backend/ # FastAPI backend
-├── frontend/ # React + Vite frontend
-└── README.md
-
-```
----
-
 ## Docker Usage (recommended)
 
 **1. Build the image**
